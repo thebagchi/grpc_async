@@ -113,12 +113,18 @@ class Server {
     new RPC1Handler(&this->service_, this->cq_.get());
     new RPC2Handler(&this->service_, this->cq_.get());
   }
+
+  [[noreturn]]
   void Loop() {
     void* tag;
     bool ok;
     while(true) {
-      GPR_ASSERT(cq_->Next(&tag, &ok));
-      GPR_ASSERT(ok);
+      if (GPR_UNLIKELY(!(cq_->Next(&tag, &ok)))) {
+        continue;
+      }
+      if (GPR_UNLIKELY(!(ok))) {
+        continue;
+      }
       static_cast<RPCHandler*>(tag)->Proceed();
     }
   }
