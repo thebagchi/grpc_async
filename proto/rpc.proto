@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package rpc;
+
+service SampleSvc {
+  rpc RPC_1 (RPC1Request) returns (RPC1Response) {
+
+  }
+  rpc RPC_2 (RPC2Request) returns (RPC2Response) {
+
+  }
+}
+
+message RPC1Request {
+  optional string name                 = 1;
+}
+
+message RPC1Response {
+  optional string message              = 1;
+}
+
+message RPC2Request {
+  optional string name                 = 1;
+}
+
+message RPC2Response {
+  optional string message              = 1;
+}
