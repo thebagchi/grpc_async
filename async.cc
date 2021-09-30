@@ -94,6 +94,52 @@ class RPC2Handler : public RPCHandler {
   std::atomic_bool done_;
 };
 
+template<typename Request, typename Response, typename Service>
+class RPCTHandler : public RPCHandler {
+  using Responder = grpc::ServerAsyncResponseWriter<Response>;
+  using Registrar = std::function<void(
+    Service *, grpc::ServerContext *, Request *, Responder *, grpc::CompletionQueue *, grpc::ServerCompletionQueue *,
+    void *)>;
+ public:
+  RPCTHandler(Service *service, grpc::ServerCompletionQueue *cq, Registrar registrar) :
+    service_(service), cq_(cq), responder_(&ctx_), done_(false), registrar_(registrar) {
+    Register();
+  }
+
+ public:
+  void Proceed() override {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    if (!done_) {
+      new RPCTHandler<Request, Response, Service>(this->service_, this->cq_, this->registrar_);
+      done_.store(true);
+      responder_.Finish(response_, grpc::Status::OK, this);
+    } else {
+      Cleanup();
+    }
+  }
+
+  void Cleanup() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    delete this;
+  }
+
+ private:
+  void Register() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    this->registrar_(service_, &ctx_, &request_, &responder_, cq_, cq_, this);
+  }
+
+ private:
+  Service *service_;
+  Request request_;
+  Response response_;
+  Responder responder_;
+  grpc::ServerCompletionQueue *cq_;
+  grpc::ServerContext ctx_;
+  std::atomic_bool done_;
+  Registrar registrar_;
+};
+
 class Server {
  public:
   explicit Server(std::string addr) : addr_(std::move(addr)) {
@@ -117,8 +163,12 @@ class Server {
 
  private:
   void Install() {
-    new RPC1Handler(&this->service_, this->cq_.get());
-    new RPC2Handler(&this->service_, this->cq_.get());
+    //new RPC1Handler(&this->service_, this->cq_.get());
+    //new RPC2Handler(&this->service_, this->cq_.get());
+    new RPCTHandler<rpc::RPC1Request, rpc::RPC1Response, rpc::SampleSvc::AsyncService>(
+      &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_1);
+    new RPCTHandler<rpc::RPC2Request, rpc::RPC2Response, rpc::SampleSvc::AsyncService>(
+      &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_2);
   }
 
   [[noreturn]]
