@@ -6,12 +6,13 @@
 class RPCHandler {
  public:
   virtual ~RPCHandler() = default;
+
   virtual void Proceed() = 0;
 };
 
 class RPC1Handler : public RPCHandler {
  public:
-  RPC1Handler(rpc::SampleSvc::AsyncService* service, grpc::ServerCompletionQueue* cq) :
+  RPC1Handler(rpc::SampleSvc::AsyncService *service, grpc::ServerCompletionQueue *cq) :
     service_(service), cq_(cq), responder_(&ctx_), done_(false) {
     Register();
   }
@@ -29,18 +30,21 @@ class RPC1Handler : public RPCHandler {
       Cleanup();
     }
   }
+
  private:
   void Register() {
     std::cout << "Inside Register RPC1" << std::endl;
     service_->RequestRPC_1(&ctx_, &request_, &responder_, cq_, cq_, this);
   }
+
   void Cleanup() {
     std::cout << "Inside Cleanup RPC1" << std::endl;
     delete this;
   }
+
  private:
-  rpc::SampleSvc::AsyncService* service_;
-  grpc::ServerCompletionQueue* cq_;
+  rpc::SampleSvc::AsyncService *service_;
+  grpc::ServerCompletionQueue *cq_;
   grpc::ServerContext ctx_;
   rpc::RPC1Request request_;
   rpc::RPC1Response response_;
@@ -50,7 +54,7 @@ class RPC1Handler : public RPCHandler {
 
 class RPC2Handler : public RPCHandler {
  public:
-  RPC2Handler(rpc::SampleSvc::AsyncService* service, grpc::ServerCompletionQueue* cq) :
+  RPC2Handler(rpc::SampleSvc::AsyncService *service, grpc::ServerCompletionQueue *cq) :
     service_(service), cq_(cq), responder_(&ctx_), done_(false) {
     Register();
   }
@@ -68,18 +72,21 @@ class RPC2Handler : public RPCHandler {
       Cleanup();
     }
   }
+
  private:
   void Register() {
     std::cout << "Inside Register RPC2" << std::endl;
     service_->RequestRPC_2(&ctx_, &request_, &responder_, cq_, cq_, this);
   }
+
   void Cleanup() {
     std::cout << "Inside Cleanup RPC2" << std::endl;
     delete this;
   }
+
  private:
-  rpc::SampleSvc::AsyncService* service_;
-  grpc::ServerCompletionQueue* cq_;
+  rpc::SampleSvc::AsyncService *service_;
+  grpc::ServerCompletionQueue *cq_;
   grpc::ServerContext ctx_;
   rpc::RPC2Request request_;
   rpc::RPC2Response response_;
@@ -116,16 +123,16 @@ class Server {
 
   [[noreturn]]
   void Loop() {
-    void* tag;
+    void *tag;
     bool ok;
-    while(true) {
+    while (true) {
       if (GPR_UNLIKELY(!(cq_->Next(&tag, &ok)))) {
         continue;
       }
       if (GPR_UNLIKELY(!(ok))) {
         continue;
       }
-      static_cast<RPCHandler*>(tag)->Proceed();
+      static_cast<RPCHandler *>(tag)->Proceed();
     }
   }
 
