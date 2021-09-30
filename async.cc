@@ -155,6 +155,7 @@ class Server {
     grpc::ServerBuilder builder;
     builder.AddListeningPort(addr_, grpc::InsecureServerCredentials());
     builder.RegisterService(&service_);
+    builder.SetResourceQuota(grpc::ResourceQuota().SetMaxThreads(1));
     cq_ = builder.AddCompletionQueue();
     server_ = builder.BuildAndStart();
     Install();
