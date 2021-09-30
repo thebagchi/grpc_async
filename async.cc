@@ -102,7 +102,7 @@ class RPCTHandler : public RPCHandler {
     void *)>;
  public:
   RPCTHandler(Service *service, grpc::ServerCompletionQueue *cq, Registrar registrar) :
-    service_(service), cq_(cq), responder_(&ctx_), done_(false), registrar_(registrar) {
+    service_(service), cq_(cq), responder_(&ctx_), done_(false), registrar_(std::move(registrar)) {
     Register();
   }
 
