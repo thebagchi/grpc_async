@@ -4,11 +4,12 @@
 #include <grpcpp/grpcpp.h>
 
 class SampleSvcImpl final : public rpc::SampleSvc::Service {
-  grpc::Status RPC_1(::grpc::ServerContext* context, const ::rpc::RPC1Request* request, ::rpc::RPC1Response* response) {
+  grpc::Status RPC_1(grpc::ServerContext *context, const rpc::RPC1Request *request, rpc::RPC1Response *response) override {
     std::cout << "Handling RPC_1" << std::endl;
     return grpc::Status::OK;
   }
-  grpc::Status RPC_2(::grpc::ServerContext* context, const ::rpc::RPC2Request* request, ::rpc::RPC2Response* response) {
+
+  grpc::Status RPC_2(grpc::ServerContext *context, const rpc::RPC2Request *request, rpc::RPC2Response *response) override {
     std::cout << "Handling RPC_2" << std::endl;
     return grpc::Status::OK;
   }

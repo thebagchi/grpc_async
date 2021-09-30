@@ -7,7 +7,7 @@ int main() {
 
   auto channel = grpc::CreateChannel("0.0.0.0:12345", grpc::InsecureChannelCredentials());
   auto stub = rpc::SampleSvc::NewStub(channel);
-  for (auto i = 0; i < 1000*1000; i++) {
+  for (auto i = 0; i < 1000 * 1000; i++) {
     {
       grpc::ClientContext context;
       auto request = rpc::RPC1Request();
