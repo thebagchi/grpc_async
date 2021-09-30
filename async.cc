@@ -20,8 +20,8 @@ class RPC1Handler : public RPCHandler {
 
  public:
   void Proceed() override {
-    std::cout << "Inside Proceed" << std::endl;
     if (!done_) {
+      std::cout << "Inside Proceed RPC1" << std::endl;
       new RPC1Handler(this->service_, this->cq_);
       done_.store(true);
       responder_.Finish(response_, grpc::Status::OK, this);
@@ -31,9 +31,11 @@ class RPC1Handler : public RPCHandler {
   }
  private:
   void Register() {
+    std::cout << "Inside Register RPC1" << std::endl;
     service_->RequestRPC_1(&ctx_, &request_, &responder_, cq_, cq_, this);
   }
   void Cleanup() {
+    std::cout << "Inside Cleanup RPC1" << std::endl;
     delete this;
   }
  private:
@@ -57,8 +59,8 @@ class RPC2Handler : public RPCHandler {
 
  public:
   void Proceed() override {
-    std::cout << "Inside Proceed" << std::endl;
     if (!done_) {
+      std::cout << "Inside Proceed RPC2" << std::endl;
       new RPC2Handler(this->service_, this->cq_);
       done_.store(true);
       responder_.Finish(response_, grpc::Status::OK, this);
@@ -68,9 +70,11 @@ class RPC2Handler : public RPCHandler {
   }
  private:
   void Register() {
+    std::cout << "Inside Register RPC2" << std::endl;
     service_->RequestRPC_2(&ctx_, &request_, &responder_, cq_, cq_, this);
   }
   void Cleanup() {
+    std::cout << "Inside Cleanup RPC2" << std::endl;
     delete this;
   }
  private:
@@ -82,7 +86,6 @@ class RPC2Handler : public RPCHandler {
   grpc::ServerAsyncResponseWriter<rpc::RPC2Response> responder_;
   std::atomic_bool done_;
 };
-
 
 class Server {
  public:
