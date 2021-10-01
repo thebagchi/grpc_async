@@ -89,33 +89,33 @@ int main() {
       } else {
         std::cout << "Response status: " << status.error_details() << " code: " << status.error_code() << std::endl;
       }
-      {
-        grpc::ClientContext context;
-        auto request = sample::GRPC1Request();
-        request.set_name(gen_random());
-        std::cout << request.DebugString() << std::endl;
-        auto response = sample::GRPC1Response().New();
-        auto status = stubExampleSvc->RPC_1(&context, request, response);
-        if (status.ok()) {
-          std::cout << response->DebugString() << std::endl;
-          std::cout << "Successfully called RPC_1" << std::endl;
-        } else {
-          std::cout << "Response status: " << status.error_details() << " code: " << status.error_code() << std::endl;
-        }
+    }
+    {
+      grpc::ClientContext context;
+      auto request = sample::GRPC1Request();
+      request.set_name(gen_random());
+      std::cout << request.DebugString() << std::endl;
+      auto response = sample::GRPC1Response().New();
+      auto status = stubExampleSvc->RPC_1(&context, request, response);
+      if (status.ok()) {
+        std::cout << response->DebugString() << std::endl;
+        std::cout << "Successfully called RPC_1" << std::endl;
+      } else {
+        std::cout << "Response status: " << status.error_details() << " code: " << status.error_code() << std::endl;
       }
-      {
-        grpc::ClientContext context;
-        auto request = sample::GRPC2Request();
-        request.set_name(gen_random());
-        std::cout << request.DebugString() << std::endl;
-        auto response = sample::GRPC2Response().New();
-        auto status = stubExampleSvc->RPC_2(&context, request, response);
-        if (status.ok()) {
-          std::cout << response->DebugString() << std::endl;
-          std::cout << "Successfully called RPC_2" << std::endl;
-        } else {
-          std::cout << "Response status: " << status.error_details() << " code: " << status.error_code() << std::endl;
-        }
+    }
+    {
+      grpc::ClientContext context;
+      auto request = sample::GRPC2Request();
+      request.set_name(gen_random());
+      std::cout << request.DebugString() << std::endl;
+      auto response = sample::GRPC2Response().New();
+      auto status = stubExampleSvc->RPC_2(&context, request, response);
+      if (status.ok()) {
+        std::cout << response->DebugString() << std::endl;
+        std::cout << "Successfully called RPC_2" << std::endl;
+      } else {
+        std::cout << "Response status: " << status.error_details() << " code: " << status.error_code() << std::endl;
       }
     }
   }
