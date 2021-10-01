@@ -3,6 +3,7 @@
 #include <grpcpp/grpcpp.h>
 #include <absl/strings/str_join.h>
 #include "proto/rpc.grpc.pb.h"
+#include "proto/sample.grpc.pb.h"
 
 class RPCHandler {
  public:
@@ -265,6 +266,60 @@ class AnotherSampleSvcHandlerImpl final : public AnotherSampleSvcHandler {
 #endif
 };
 
+class ExampleSvcHandler : public Handler {
+ public:
+  ~ExampleSvcHandler() override = default;
+
+ public:
+  void Install(grpc::ServerCompletionQueue* cq) final {
+    this->cq_ = cq;
+    new RPCTHandler<sample::GRPC1Request, sample::GRPC1Response, sample::ExampleSvc::AsyncService>(
+      &this->service_, this->cq_, &sample::ExampleSvc::AsyncService::RequestRPC_1, std::bind(
+        &ExampleSvcHandler::HandleRPC_1, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    new RPCTHandler<sample::GRPC2Request, sample::GRPC2Response, sample::ExampleSvc::AsyncService>(
+      &this->service_, this->cq_, &sample::ExampleSvc::AsyncService::RequestRPC_2, std::bind(
+        &ExampleSvcHandler::HandleRPC_2, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+  }
+
+  grpc::Service* Service() final {
+    return &service_;
+  }
+
+  virtual void HandleRPC_1(
+    const sample::GRPC1Request& request, sample::GRPC1Response* response, const std::function<void(grpc::Status)>& callback) {
+    callback(grpc::Status(grpc::StatusCode::UNIMPLEMENTED, ""));
+  }
+
+  virtual void HandleRPC_2(
+    const sample::GRPC2Request& request, sample::GRPC2Response* response, const std::function<void(grpc::Status)>& callback) {
+    callback(grpc::Status(grpc::StatusCode::UNIMPLEMENTED, ""));
+  }
+
+  sample::ExampleSvc::AsyncService service_;
+  grpc::ServerCompletionQueue* cq_ = nullptr;
+};
+
+
+class ExampleSvcHandlerImpl final : public ExampleSvcHandler {
+ public:
+  ~ExampleSvcHandlerImpl() override = default;
+#if 1
+  void HandleRPC_1(
+    const sample::GRPC1Request& request, sample::GRPC1Response* response, const std::function<void(grpc::Status)>& callback) override {
+    std::vector<std::string> items = {"Hello", request.name(), "!!!"};
+    response->set_message(absl::StrJoin(items, " "));
+    callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
+  }
+
+  void HandleRPC_2(
+    const sample::GRPC2Request& request, sample::GRPC2Response* response, const std::function<void(grpc::Status)>& callback) override {
+    std::vector<std::string> items = {"Hello", request.name(), "!!!"};
+    response->set_message(absl::StrJoin(items, " "));
+    callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
+  }
+#endif
+};
+
 class Server {
  public:
   explicit Server(std::string addr) : addr_(std::move(addr)) {
@@ -340,9 +395,11 @@ int main() {
   std::cout << "Hello, World!" << std::endl;
   SampleSvcHandlerImpl sampleSvcHandler;
   AnotherSampleSvcHandlerImpl anotherSampleSvcHandler;
+  ExampleSvcHandlerImpl exampleSvcHandler;
   Server server("0.0.0.0:12345");
   server.AddHandler(&sampleSvcHandler);
   server.AddHandler(&anotherSampleSvcHandler);
+  server.AddHandler(&exampleSvcHandler);
   server.Start();
   return 0;
 }
