@@ -156,6 +156,11 @@ class SampleSvcHandler : public Handler {
   ~SampleSvcHandler() override = default;
 };
 
+class SampleSvcHandlerImpl final : public SampleSvcHandler {
+ public:
+  ~SampleSvcHandlerImpl() override = default;
+};
+
 class Server {
  public:
   explicit Server(std::string addr) : addr_(std::move(addr)) {
