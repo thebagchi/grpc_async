@@ -121,11 +121,14 @@ const char descriptor_table_protodef_rpc_2eproto[] PROTOBUF_SECTION_VARIABLE(pro
   "nse\022\017\n\007message\030\001 \001(\t2k\n\tSampleSvc\022.\n\005RPC"
   "_1\022\020.rpc.RPC1Request\032\021.rpc.RPC1Response\""
   "\000\022.\n\005RPC_2\022\020.rpc.RPC2Request\032\021.rpc.RPC2R"
-  "esponse\"\000"
+  "esponse\"\0002r\n\020AnotherSampleSvc\022.\n\005RPC_1\022\020"
+  ".rpc.RPC1Request\032\021.rpc.RPC1Response\"\000\022.\n"
+  "\005RPC_2\022\020.rpc.RPC2Request\032\021.rpc.RPC2Respo"
+  "nse\"\000"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_rpc_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_rpc_2eproto = {
-  false, false, 249, descriptor_table_protodef_rpc_2eproto, "rpc.proto", 
+  false, false, 365, descriptor_table_protodef_rpc_2eproto, "rpc.proto", 
   &descriptor_table_rpc_2eproto_once, nullptr, 0, 4,
   schemas, file_default_instances, TableStruct_rpc_2eproto::offsets,
   file_level_metadata_rpc_2eproto, file_level_enum_descriptors_rpc_2eproto, file_level_service_descriptors_rpc_2eproto,

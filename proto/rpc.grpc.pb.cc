@@ -124,5 +124,108 @@ SampleSvc::Service::~Service() {
 }
 
 
+static const char* AnotherSampleSvc_method_names[] = {
+  "/rpc.AnotherSampleSvc/RPC_1",
+  "/rpc.AnotherSampleSvc/RPC_2",
+};
+
+std::unique_ptr< AnotherSampleSvc::Stub> AnotherSampleSvc::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< AnotherSampleSvc::Stub> stub(new AnotherSampleSvc::Stub(channel, options));
+  return stub;
+}
+
+AnotherSampleSvc::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_RPC_1_(AnotherSampleSvc_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_RPC_2_(AnotherSampleSvc_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status AnotherSampleSvc::Stub::RPC_1(::grpc::ClientContext* context, const ::rpc::RPC1Request& request, ::rpc::RPC1Response* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::rpc::RPC1Request, ::rpc::RPC1Response, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RPC_1_, context, request, response);
+}
+
+void AnotherSampleSvc::Stub::async::RPC_1(::grpc::ClientContext* context, const ::rpc::RPC1Request* request, ::rpc::RPC1Response* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::rpc::RPC1Request, ::rpc::RPC1Response, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RPC_1_, context, request, response, std::move(f));
+}
+
+void AnotherSampleSvc::Stub::async::RPC_1(::grpc::ClientContext* context, const ::rpc::RPC1Request* request, ::rpc::RPC1Response* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RPC_1_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::rpc::RPC1Response>* AnotherSampleSvc::Stub::PrepareAsyncRPC_1Raw(::grpc::ClientContext* context, const ::rpc::RPC1Request& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::rpc::RPC1Response, ::rpc::RPC1Request, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RPC_1_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::rpc::RPC1Response>* AnotherSampleSvc::Stub::AsyncRPC_1Raw(::grpc::ClientContext* context, const ::rpc::RPC1Request& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncRPC_1Raw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status AnotherSampleSvc::Stub::RPC_2(::grpc::ClientContext* context, const ::rpc::RPC2Request& request, ::rpc::RPC2Response* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::rpc::RPC2Request, ::rpc::RPC2Response, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RPC_2_, context, request, response);
+}
+
+void AnotherSampleSvc::Stub::async::RPC_2(::grpc::ClientContext* context, const ::rpc::RPC2Request* request, ::rpc::RPC2Response* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::rpc::RPC2Request, ::rpc::RPC2Response, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RPC_2_, context, request, response, std::move(f));
+}
+
+void AnotherSampleSvc::Stub::async::RPC_2(::grpc::ClientContext* context, const ::rpc::RPC2Request* request, ::rpc::RPC2Response* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RPC_2_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::rpc::RPC2Response>* AnotherSampleSvc::Stub::PrepareAsyncRPC_2Raw(::grpc::ClientContext* context, const ::rpc::RPC2Request& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::rpc::RPC2Response, ::rpc::RPC2Request, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RPC_2_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::rpc::RPC2Response>* AnotherSampleSvc::Stub::AsyncRPC_2Raw(::grpc::ClientContext* context, const ::rpc::RPC2Request& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncRPC_2Raw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+AnotherSampleSvc::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      AnotherSampleSvc_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< AnotherSampleSvc::Service, ::rpc::RPC1Request, ::rpc::RPC1Response, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](AnotherSampleSvc::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::rpc::RPC1Request* req,
+             ::rpc::RPC1Response* resp) {
+               return service->RPC_1(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      AnotherSampleSvc_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< AnotherSampleSvc::Service, ::rpc::RPC2Request, ::rpc::RPC2Response, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](AnotherSampleSvc::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::rpc::RPC2Request* req,
+             ::rpc::RPC2Response* resp) {
+               return service->RPC_2(ctx, req, resp);
+             }, this)));
+}
+
+AnotherSampleSvc::Service::~Service() {
+}
+
+::grpc::Status AnotherSampleSvc::Service::RPC_1(::grpc::ServerContext* context, const ::rpc::RPC1Request* request, ::rpc::RPC1Response* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status AnotherSampleSvc::Service::RPC_2(::grpc::ServerContext* context, const ::rpc::RPC2Request* request, ::rpc::RPC2Response* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
 }  // namespace rpc
 

@@ -11,6 +11,15 @@ service SampleSvc {
   }
 }
 
+service AnotherSampleSvc {
+  rpc RPC_1 (RPC1Request) returns (RPC1Response) {
+
+  }
+  rpc RPC_2 (RPC2Request) returns (RPC2Response) {
+
+  }
+}
+
 message RPC1Request {
   optional string name                 = 1;
 }
