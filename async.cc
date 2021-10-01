@@ -10,6 +10,7 @@ class RPCHandler {
   virtual void Proceed() = 0;
 };
 
+#ifndef USING_TEMPLATE
 class RPC1Handler : public RPCHandler {
  public:
   RPC1Handler(rpc::SampleSvc::AsyncService *service, grpc::ServerCompletionQueue *cq) :
@@ -93,7 +94,9 @@ class RPC2Handler : public RPCHandler {
   grpc::ServerAsyncResponseWriter<rpc::RPC2Response> responder_;
   std::atomic_bool done_;
 };
+#endif
 
+#ifdef USING_TEMPLATE
 template<typename Request, typename Response, typename Service>
 class RPCTHandler : public RPCHandler {
   using Responder = grpc::ServerAsyncResponseWriter<Response>;
@@ -139,6 +142,19 @@ class RPCTHandler : public RPCHandler {
   std::atomic_bool done_;
   Registrar registrar_;
 };
+#endif
+
+class Handler {
+ public:
+  virtual ~Handler() = default;
+
+  virtual void Install() = 0;
+};
+
+class SampleSvcHandler : public Handler {
+ public:
+  ~SampleSvcHandler() override = default;
+};
 
 class Server {
  public:
@@ -149,6 +165,10 @@ class Server {
   ~Server() {
     server_->Shutdown();
     cq_->Shutdown();
+  }
+
+  void AddHandler(Handler* handler) {
+    handlers_.push_back(handler);
   }
 
   void Start() {
@@ -164,12 +184,17 @@ class Server {
 
  private:
   void Install() {
-    //new RPC1Handler(&this->service_, this->cq_.get());
-    //new RPC2Handler(&this->service_, this->cq_.get());
+#ifndef USING_TEMPLATE
+    new RPC1Handler(&this->service_, this->cq_.get());
+    new RPC2Handler(&this->service_, this->cq_.get());
+#endif
+
+#ifdef USING_TEMPLATE
     new RPCTHandler<rpc::RPC1Request, rpc::RPC1Response, rpc::SampleSvc::AsyncService>(
       &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_1);
     new RPCTHandler<rpc::RPC2Request, rpc::RPC2Response, rpc::SampleSvc::AsyncService>(
       &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_2);
+#endif
   }
 
   [[noreturn]]
@@ -192,6 +217,7 @@ class Server {
   std::unique_ptr<grpc::Server> server_;
   rpc::SampleSvc::AsyncService service_;
   std::unique_ptr<grpc::ServerCompletionQueue> cq_;
+  std::vector<Handler*> handlers_;
 };
 
 int main() {
