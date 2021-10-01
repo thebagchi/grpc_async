@@ -103,9 +103,11 @@ class RPCTHandler : public RPCHandler {
   using Registrar = std::function<void(
     Service *, grpc::ServerContext *, Request *, Responder *, grpc::CompletionQueue *, grpc::ServerCompletionQueue *,
     void *)>;
+  using Callback  = std::function<void(grpc::Status)>;
+  using Handler   = std::function<void(const Request&, Response*, const Callback&)>;
  public:
-  RPCTHandler(Service *service, grpc::ServerCompletionQueue *cq, Registrar registrar) :
-    service_(service), cq_(cq), responder_(&ctx_), done_(false), registrar_(std::move(registrar)) {
+  RPCTHandler(Service *service, grpc::ServerCompletionQueue *cq, Registrar registrar, Handler handler) :
+    service_(service), cq_(cq), responder_(&ctx_), done_(false), registrar_(std::move(registrar)), handler_(handler) {
     Register();
   }
 
@@ -113,9 +115,11 @@ class RPCTHandler : public RPCHandler {
   void Proceed() override {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     if (!done_) {
-      new RPCTHandler<Request, Response, Service>(this->service_, this->cq_, this->registrar_);
-      done_.store(true);
-      responder_.Finish(response_, grpc::Status::OK, this);
+      new RPCTHandler<Request, Response, Service>(this->service_, this->cq_, this->registrar_, this->handler_);
+      handler_(request_, &response_, [=](grpc::Status status) {
+        done_.store(true);
+        responder_.Finish(response_, status, this);
+      });
     } else {
       Cleanup();
     }
@@ -141,6 +145,7 @@ class RPCTHandler : public RPCHandler {
   grpc::ServerContext ctx_;
   std::atomic_bool done_;
   Registrar registrar_;
+  Handler handler_;
 };
 #endif
 
@@ -148,17 +153,57 @@ class Handler {
  public:
   virtual ~Handler() = default;
 
-  virtual void Install() = 0;
+  virtual void Install(grpc::ServerCompletionQueue* cq) = 0;
+  virtual grpc::Service* Service() = 0;
 };
 
 class SampleSvcHandler : public Handler {
  public:
   ~SampleSvcHandler() override = default;
+
+ public:
+  void Install(grpc::ServerCompletionQueue* cq) final {
+    this->cq_ = cq;
+    new RPCTHandler<rpc::RPC1Request, rpc::RPC1Response, rpc::SampleSvc::AsyncService>(
+      &this->service_, this->cq_, &rpc::SampleSvc::AsyncService::RequestRPC_1, std::bind(
+        &SampleSvcHandler::HandleRPC_1, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    new RPCTHandler<rpc::RPC2Request, rpc::RPC2Response, rpc::SampleSvc::AsyncService>(
+      &this->service_, this->cq_, &rpc::SampleSvc::AsyncService::RequestRPC_2, std::bind(
+        &SampleSvcHandler::HandleRPC_2, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+  }
+
+  grpc::Service* Service() final {
+    return &service_;
+  }
+
+  virtual void HandleRPC_1(
+    const rpc::RPC1Request& request, rpc::RPC1Response* response, const std::function<void(grpc::Status)>& callback) {
+    callback(grpc::Status(grpc::StatusCode::UNIMPLEMENTED, ""));
+  }
+
+  virtual void HandleRPC_2(
+    const rpc::RPC2Request& request, rpc::RPC2Response* response, const std::function<void(grpc::Status)>& callback) {
+    callback(grpc::Status(grpc::StatusCode::UNIMPLEMENTED, ""));
+  }
+
+  rpc::SampleSvc::AsyncService service_;
+  grpc::ServerCompletionQueue* cq_ = nullptr;
 };
 
 class SampleSvcHandlerImpl final : public SampleSvcHandler {
  public:
   ~SampleSvcHandlerImpl() override = default;
+#if 1
+  void HandleRPC_1(
+    const rpc::RPC1Request& request, rpc::RPC1Response* response, const std::function<void(grpc::Status)>& callback) override {
+    callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
+  }
+
+  void HandleRPC_2(
+    const rpc::RPC2Request& request, rpc::RPC2Response* response, const std::function<void(grpc::Status)>& callback) override {
+    callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
+  }
+#endif
 };
 
 class Server {
@@ -179,10 +224,16 @@ class Server {
   void Start() {
     grpc::ServerBuilder builder;
     builder.AddListeningPort(addr_, grpc::InsecureServerCredentials());
-    builder.RegisterService(&service_);
+    for (const auto &item : handlers_) {
+      builder.RegisterService(item->Service());
+    }
     builder.SetResourceQuota(grpc::ResourceQuota().SetMaxThreads(1));
     cq_ = builder.AddCompletionQueue();
     server_ = builder.BuildAndStart();
+    if (nullptr == server_) {
+      std::cout << "Failed to start server on: " << addr_ << std::endl;
+      return;
+    }
     Install();
     Loop();
   }
@@ -193,12 +244,14 @@ class Server {
     new RPC1Handler(&this->service_, this->cq_.get());
     new RPC2Handler(&this->service_, this->cq_.get());
 #endif
-
+    for (const auto &item : handlers_) {
+      item->Install(this->cq_.get());
+    }
 #ifdef USING_TEMPLATE
-    new RPCTHandler<rpc::RPC1Request, rpc::RPC1Response, rpc::SampleSvc::AsyncService>(
-      &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_1);
-    new RPCTHandler<rpc::RPC2Request, rpc::RPC2Response, rpc::SampleSvc::AsyncService>(
-      &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_2);
+    //new RPCTHandler<rpc::RPC1Request, rpc::RPC1Response, rpc::SampleSvc::AsyncService>(
+    //  &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_1);
+    //new RPCTHandler<rpc::RPC2Request, rpc::RPC2Response, rpc::SampleSvc::AsyncService>(
+    //  &this->service_, this->cq_.get(), &rpc::SampleSvc::AsyncService::RequestRPC_2);
 #endif
   }
 
@@ -220,15 +273,15 @@ class Server {
  private:
   std::string addr_;
   std::unique_ptr<grpc::Server> server_;
-  rpc::SampleSvc::AsyncService service_;
   std::unique_ptr<grpc::ServerCompletionQueue> cq_;
   std::vector<Handler*> handlers_;
 };
 
 int main() {
   std::cout << "Hello, World!" << std::endl;
-
+  SampleSvcHandlerImpl sampleSvcHandler;
   Server server("0.0.0.0:12345");
+  server.AddHandler(&sampleSvcHandler);
   server.Start();
   return 0;
 }
