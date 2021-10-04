@@ -1,5 +1,6 @@
-#include "server.hh"
-#include "framework/rpc_handler.hh"
+#include "Server.hh"
+#include "Framework/RPCHandler.hh"
+#include "Framework/Handler.hh"
 
 Server::~Server() {
   server_->Shutdown();

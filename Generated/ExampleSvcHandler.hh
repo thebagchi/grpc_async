@@ -1,8 +1,8 @@
 #ifndef EXAMPLESVC_HANDLER__INCLUDED
 #define EXAMPLESVC_HANDLER__INCLUDED
 
-#include "framework/handler.hh"
-#include "framework/rpc_handler.hh"
+#include "Framework/Handler.hh"
+#include "Framework/RPCHandler.hh"
 #include "proto/sample.grpc.pb.h"
 
 class ExampleSvcHandler : public Handler {

@@ -14,10 +14,10 @@ include_directories(${CMAKE_SOURCE_DIR})
 add_executable(
         sample
         sample.cc
-        framework/server.cc
-        services/samplesvc_impl.cc
-        services/anothersamplesvc_impl.cc
-        services/examplesvc_impl.cc
+        Framework/Server.cc
+        Services/SampleSvcImpl.cc
+        Services/AnotherSampleSvcImpl.cc
+        Services/ExampleSvcImpl.cc
 )
 
 target_link_libraries(

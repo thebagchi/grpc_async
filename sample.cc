@@ -1,8 +1,8 @@
 
-#include "framework/server.hh"
-#include "services/samplesvc_impl.hh"
-#include "services/examplesvc_impl.hh"
-#include "services/anothersamplesvc_impl.hh"
+#include "Framework/Server.hh"
+#include "Services/SampleSvcImpl.hh"
+#include "Services/ExampleSvcImpl.hh"
+#include "Services/AnotherSampleSvcImpl.hh"
 
 int main() {
   std::cout << "Hello World!!!" << std::endl;

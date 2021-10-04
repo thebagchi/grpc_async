@@ -1,7 +1,7 @@
 #ifndef SAMPLESVC_IMPL__INCLUDED
 #define SAMPLESVC_IMPL__INCLUDED
 
-#include "generated/samplesvc_handler.hh"
+#include "Generated/SampleSvcHandler.hh"
 
 class SampleSvcImpl : public SampleSvcHandler {
  public:

@@ -1,8 +1,8 @@
 #ifndef FRAMEWORK_SERVER__INCLUDED
 #define FRAMEWORK_SERVER__INCLUDED
 
-#include "framework/macros.hh"
-#include "framework/handler.hh"
+#include "Framework/Macros.hh"
+#include "Framework/Handler.hh"
 #include <string>
 #include <memory>
 #include <grpcpp/grpcpp.h>
