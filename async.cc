@@ -1,9 +1,15 @@
 #include <iostream>
 #include <utility>
+#include <thread>
+
 #include <grpcpp/grpcpp.h>
 #include <absl/strings/str_join.h>
 #include "proto/rpc.grpc.pb.h"
 #include "proto/sample.grpc.pb.h"
+
+#include "app_msg.h"
+#include "processor.hpp"
+#include "queue.hpp"
 
 class RPCHandler {
  public:
@@ -114,10 +120,13 @@ class RPCTHandler : public RPCHandler {
   }
 
  public:
+  // Grpc server thread context 
   void Proceed() override {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     if (!done_) {
+        // This new object is enqueud into the async server using the register call in the constructor 
       new RPCTHandler<Request, Response, Service>(this->service_, this->cq_, this->registrar_, this->handler_);
+      // Grpc server thread context
       handler_(request_, &response_, [=](grpc::Status status) {
         done_.store(true);
         responder_.Finish(response_, status, this);
@@ -304,11 +313,31 @@ class ExampleSvcHandlerImpl final : public ExampleSvcHandler {
  public:
   ~ExampleSvcHandlerImpl() override = default;
 #if 1
+  // Grpcs server thread context
   void HandleRPC_1(
     const sample::GRPC1Request& request, sample::GRPC1Response* response, const std::function<void(grpc::Status)>& callback) override {
-    std::vector<std::string> items = {"Hello", request.name(), "!!!"};
-    response->set_message(absl::StrJoin(items, " "));
-    callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
+      //std::vector<std::string> items = {"Hello", request.name(), "!!!"};
+      //
+      auto rpc1AppMsgRequest = std::make_shared<RPC1AppMsgRequest>();
+      rpc1AppMsgRequest->value = std::string(request.name());
+
+      auto response_fn = [response, callback](std::shared_ptr<RPC1AppMsgResponse> app_response, bool ok) {
+          std::cout << "Calling custom HandleRPC_1 response fn " << std::endl;
+          response->set_message(app_response->value);
+          if (ok) {
+              callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
+          } else {
+              callback(grpc::Status(::grpc::StatusCode::UNKNOWN, "ERROR"));
+          }
+      };
+
+      auto rpc1Event = new RPC1Event(rpc1AppMsgRequest, response_fn);
+      rpc1Event->event_type = E_RPC1;
+      std::cout << "Pushing event to event queue " << std::endl;
+      event_queue.PutElementInQueue(static_cast<EventBase*>(rpc1Event));
+    
+      //response->set_message(absl::StrJoin(items, " "));
+      //callback(grpc::Status(::grpc::StatusCode::OK, "OK"));
   }
 
   void HandleRPC_2(
@@ -417,6 +446,9 @@ int main() {
   server.AddHandler(&sampleSvcHandler);
   server.AddHandler(&anotherSampleSvcHandler);
   server.AddHandler(&exampleSvcHandler);
+  std::thread t1(RunProcessor, nullptr);
+  // Start event thread and establish message queue between them
   server.Start();
+  t1.join();
   return 0;
 }
