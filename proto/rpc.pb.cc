@@ -65,8 +65,22 @@ struct RPC2ResponseDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT RPC2ResponseDefaultTypeInternal _RPC2Response_default_instance_;
+constexpr SampleMessage::SampleMessage(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : string_value_(nullptr)
+  , boolean_value_(true)
+  , integer_value_(PROTOBUF_LONGLONG(12345)){}
+struct SampleMessageDefaultTypeInternal {
+  constexpr SampleMessageDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~SampleMessageDefaultTypeInternal() {}
+  union {
+    SampleMessage _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT SampleMessageDefaultTypeInternal _SampleMessage_default_instance_;
 }  // namespace rpc
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_rpc_2eproto[4];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_rpc_2eproto[5];
 static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_rpc_2eproto = nullptr;
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_rpc_2eproto = nullptr;
 
@@ -99,12 +113,24 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_rpc_2eproto::offsets[] PROTOBU
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::rpc::RPC2Response, message_),
   0,
+  PROTOBUF_FIELD_OFFSET(::rpc::SampleMessage, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::rpc::SampleMessage, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::rpc::SampleMessage, string_value_),
+  PROTOBUF_FIELD_OFFSET(::rpc::SampleMessage, integer_value_),
+  PROTOBUF_FIELD_OFFSET(::rpc::SampleMessage, boolean_value_),
+  0,
+  2,
+  1,
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 6, sizeof(::rpc::RPC1Request)},
   { 7, 13, sizeof(::rpc::RPC1Response)},
   { 14, 20, sizeof(::rpc::RPC2Request)},
   { 21, 27, sizeof(::rpc::RPC2Response)},
+  { 28, 36, sizeof(::rpc::SampleMessage)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -112,24 +138,28 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::rpc::_RPC1Response_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::rpc::_RPC2Request_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::rpc::_RPC2Response_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::rpc::_SampleMessage_default_instance_),
 };
 
 const char descriptor_table_protodef_rpc_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\trpc.proto\022\003rpc\"\033\n\013RPC1Request\022\014\n\004name\030"
   "\001 \001(\t\"\037\n\014RPC1Response\022\017\n\007message\030\001 \001(\t\"\033"
   "\n\013RPC2Request\022\014\n\004name\030\001 \001(\t\"\037\n\014RPC2Respo"
-  "nse\022\017\n\007message\030\001 \001(\t2k\n\tSampleSvc\022.\n\005RPC"
-  "_1\022\020.rpc.RPC1Request\032\021.rpc.RPC1Response\""
-  "\000\022.\n\005RPC_2\022\020.rpc.RPC2Request\032\021.rpc.RPC2R"
-  "esponse\"\0002r\n\020AnotherSampleSvc\022.\n\005RPC_1\022\020"
-  ".rpc.RPC1Request\032\021.rpc.RPC1Response\"\000\022.\n"
-  "\005RPC_2\022\020.rpc.RPC2Request\032\021.rpc.RPC2Respo"
-  "nse\"\000"
+  "nse\022\017\n\007message\030\001 \001(\t\"\227\001\n\rSampleMessage\022/"
+  "\n\014string_value\030\001 \001(\t:\014string_valueR\013stri"
+  "ngValue\022*\n\rinteger_value\030\002 \001(\003:\00512345R\014i"
+  "ntegerValue\022)\n\rboolean_value\030\003 \001(\010:\004true"
+  "R\014booleanValue2k\n\tSampleSvc\022.\n\005RPC_1\022\020.r"
+  "pc.RPC1Request\032\021.rpc.RPC1Response\"\000\022.\n\005R"
+  "PC_2\022\020.rpc.RPC2Request\032\021.rpc.RPC2Respons"
+  "e\"\0002r\n\020AnotherSampleSvc\022.\n\005RPC_1\022\020.rpc.R"
+  "PC1Request\032\021.rpc.RPC1Response\"\000\022.\n\005RPC_2"
+  "\022\020.rpc.RPC2Request\032\021.rpc.RPC2Response\"\000"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_rpc_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_rpc_2eproto = {
-  false, false, 365, descriptor_table_protodef_rpc_2eproto, "rpc.proto", 
-  &descriptor_table_rpc_2eproto_once, nullptr, 0, 4,
+  false, false, 519, descriptor_table_protodef_rpc_2eproto, "rpc.proto", 
+  &descriptor_table_rpc_2eproto_once, nullptr, 0, 5,
   schemas, file_default_instances, TableStruct_rpc_2eproto::offsets,
   file_level_metadata_rpc_2eproto, file_level_enum_descriptors_rpc_2eproto, file_level_service_descriptors_rpc_2eproto,
 };
@@ -1007,6 +1037,292 @@ void RPC2Response::InternalSwap(RPC2Response* other) {
 }
 
 
+// ===================================================================
+
+class SampleMessage::_Internal {
+ public:
+  using HasBits = decltype(std::declval<SampleMessage>()._has_bits_);
+  static void set_has_string_value(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_integer_value(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_boolean_value(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+const ::PROTOBUF_NAMESPACE_ID::internal::LazyString SampleMessage::_i_give_permission_to_break_this_code_default_string_value_{{{"string_value", 12}}, {nullptr}};
+SampleMessage::SampleMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  SharedCtor();
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:rpc.SampleMessage)
+}
+SampleMessage::SampleMessage(const SampleMessage& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _has_bits_(from._has_bits_) {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  string_value_.UnsafeSetDefault(nullptr);
+  if (from._internal_has_string_value()) {
+    string_value_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, from._internal_string_value(), 
+      GetArena());
+  }
+  ::memcpy(&boolean_value_, &from.boolean_value_,
+    static_cast<size_t>(reinterpret_cast<char*>(&integer_value_) -
+    reinterpret_cast<char*>(&boolean_value_)) + sizeof(integer_value_));
+  // @@protoc_insertion_point(copy_constructor:rpc.SampleMessage)
+}
+
+void SampleMessage::SharedCtor() {
+string_value_.UnsafeSetDefault(nullptr);
+boolean_value_ = true;
+integer_value_ = PROTOBUF_LONGLONG(12345);
+}
+
+SampleMessage::~SampleMessage() {
+  // @@protoc_insertion_point(destructor:rpc.SampleMessage)
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+void SampleMessage::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
+  string_value_.DestroyNoArena(nullptr);
+}
+
+void SampleMessage::ArenaDtor(void* object) {
+  SampleMessage* _this = reinterpret_cast< SampleMessage* >(object);
+  (void)_this;
+}
+void SampleMessage::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void SampleMessage::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void SampleMessage::Clear() {
+// @@protoc_insertion_point(message_clear_start:rpc.SampleMessage)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      string_value_.ClearToDefault(::rpc::SampleMessage::_i_give_permission_to_break_this_code_default_string_value_, GetArena());
+       }
+    boolean_value_ = true;
+    integer_value_ = PROTOBUF_LONGLONG(12345);
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* SampleMessage::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // optional string string_value = 1 [default = "string_value", json_name = "stringValue"];
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          auto str = _internal_mutable_string_value();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          #ifndef NDEBUG
+          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "rpc.SampleMessage.string_value");
+          #endif  // !NDEBUG
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // optional int64 integer_value = 2 [default = 12345, json_name = "integerValue"];
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          _Internal::set_has_integer_value(&has_bits);
+          integer_value_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // optional bool boolean_value = 3 [default = true, json_name = "booleanValue"];
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          _Internal::set_has_boolean_value(&has_bits);
+          boolean_value_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  _has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* SampleMessage::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:rpc.SampleMessage)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // optional string string_value = 1 [default = "string_value", json_name = "stringValue"];
+  if (cached_has_bits & 0x00000001u) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->_internal_string_value().data(), static_cast<int>(this->_internal_string_value().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
+      "rpc.SampleMessage.string_value");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_string_value(), target);
+  }
+
+  // optional int64 integer_value = 2 [default = 12345, json_name = "integerValue"];
+  if (cached_has_bits & 0x00000004u) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(2, this->_internal_integer_value(), target);
+  }
+
+  // optional bool boolean_value = 3 [default = true, json_name = "booleanValue"];
+  if (cached_has_bits & 0x00000002u) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(3, this->_internal_boolean_value(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:rpc.SampleMessage)
+  return target;
+}
+
+size_t SampleMessage::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:rpc.SampleMessage)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    // optional string string_value = 1 [default = "string_value", json_name = "stringValue"];
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_string_value());
+    }
+
+    // optional bool boolean_value = 3 [default = true, json_name = "booleanValue"];
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 1;
+    }
+
+    // optional int64 integer_value = 2 [default = 12345, json_name = "integerValue"];
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
+          this->_internal_integer_value());
+    }
+
+  }
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void SampleMessage::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:rpc.SampleMessage)
+  GOOGLE_DCHECK_NE(&from, this);
+  const SampleMessage* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<SampleMessage>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:rpc.SampleMessage)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:rpc.SampleMessage)
+    MergeFrom(*source);
+  }
+}
+
+void SampleMessage::MergeFrom(const SampleMessage& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:rpc.SampleMessage)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _internal_set_string_value(from._internal_string_value());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      boolean_value_ = from.boolean_value_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      integer_value_ = from.integer_value_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+}
+
+void SampleMessage::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:rpc.SampleMessage)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SampleMessage::CopyFrom(const SampleMessage& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:rpc.SampleMessage)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SampleMessage::IsInitialized() const {
+  return true;
+}
+
+void SampleMessage::InternalSwap(SampleMessage* other) {
+  using std::swap;
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  string_value_.Swap(&other->string_value_, nullptr, GetArena());
+  swap(boolean_value_, other->boolean_value_);
+  swap(integer_value_, other->integer_value_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata SampleMessage::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace rpc
 PROTOBUF_NAMESPACE_OPEN
@@ -1021,6 +1337,9 @@ template<> PROTOBUF_NOINLINE ::rpc::RPC2Request* Arena::CreateMaybeMessage< ::rp
 }
 template<> PROTOBUF_NOINLINE ::rpc::RPC2Response* Arena::CreateMaybeMessage< ::rpc::RPC2Response >(Arena* arena) {
   return Arena::CreateMessageInternal< ::rpc::RPC2Response >(arena);
+}
+template<> PROTOBUF_NOINLINE ::rpc::SampleMessage* Arena::CreateMaybeMessage< ::rpc::SampleMessage >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::rpc::SampleMessage >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

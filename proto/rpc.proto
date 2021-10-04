@@ -35,3 +35,9 @@ message RPC2Request {
 message RPC2Response {
   optional string message              = 1;
 }
+
+message SampleMessage {
+  optional string string_value         = 1 [default = "string_value", json_name = "stringValue"];
+  optional int64 integer_value         = 2 [default = 12345, json_name = "integerValue"];
+  optional bool boolean_value          = 3 [default = true, json_name = "booleanValue"];
+}
