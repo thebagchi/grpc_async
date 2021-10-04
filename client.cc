@@ -34,7 +34,7 @@ int main() {
   auto stubAnotherSampleSvc = rpc::AnotherSampleSvc::NewStub(channel);
   auto stubExampleSvc = sample::ExampleSvc::NewStub(channel);
   for (auto i = 0; i < loop; i++) {
-#if 0
+#if 1
     {
       grpc::ClientContext context;
       auto request = rpc::RPC1Request();
@@ -106,7 +106,7 @@ int main() {
         std::cout << "Response status: " << status.error_details() << " code: " << status.error_code() << std::endl;
       }
     }
-#if 0
+#if 1
     {
       grpc::ClientContext context;
       auto request = sample::GRPC2Request();
