@@ -398,7 +398,7 @@ class Server {
 #endif
   }
 
-  [[noreturn]]
+  [[noreturn]] [[noreturn]]
   void Loop() {
     void *tag;
     bool ok;
@@ -421,6 +421,23 @@ class Server {
 };
 
 int main() {
+
+  rpc::SampleMessage message;
+  std::string json_string;
+  google::protobuf::util::JsonPrintOptions options;
+  options.add_whitespace = true;
+  options.always_print_primitive_fields = true;
+  google::protobuf::util::MessageToJsonString(message, &json_string, options);
+  std::cout << json_string << std::endl;
+
+  {
+    auto msg = std::unique_ptr<rpc::SampleMessage>(rpc::SampleMessage().New());
+    google::protobuf::util::JsonStringToMessage(json_string, msg.get());
+    std::cout << "---------------------------------------------------------------------------------------" << std::endl;
+    std::cout << msg->DebugString() << std::endl;
+    std::cout << "---------------------------------------------------------------------------------------" << std::endl;
+  }
+
   std::cout << "Hello, World!" << std::endl;
   SampleSvcHandlerImpl sampleSvcHandler;
   AnotherSampleSvcHandlerImpl anotherSampleSvcHandler;

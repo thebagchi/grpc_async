@@ -46,7 +46,7 @@ struct TableStruct_rpc_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[4]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[5]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -67,12 +67,16 @@ extern RPC2RequestDefaultTypeInternal _RPC2Request_default_instance_;
 class RPC2Response;
 struct RPC2ResponseDefaultTypeInternal;
 extern RPC2ResponseDefaultTypeInternal _RPC2Response_default_instance_;
+class SampleMessage;
+struct SampleMessageDefaultTypeInternal;
+extern SampleMessageDefaultTypeInternal _SampleMessage_default_instance_;
 }  // namespace rpc
 PROTOBUF_NAMESPACE_OPEN
 template<> ::rpc::RPC1Request* Arena::CreateMaybeMessage<::rpc::RPC1Request>(Arena*);
 template<> ::rpc::RPC1Response* Arena::CreateMaybeMessage<::rpc::RPC1Response>(Arena*);
 template<> ::rpc::RPC2Request* Arena::CreateMaybeMessage<::rpc::RPC2Request>(Arena*);
 template<> ::rpc::RPC2Response* Arena::CreateMaybeMessage<::rpc::RPC2Response>(Arena*);
+template<> ::rpc::SampleMessage* Arena::CreateMaybeMessage<::rpc::SampleMessage>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace rpc {
 
@@ -700,6 +704,193 @@ class RPC2Response PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_;
   friend struct ::TableStruct_rpc_2eproto;
 };
+// -------------------------------------------------------------------
+
+class SampleMessage PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:rpc.SampleMessage) */ {
+ public:
+  inline SampleMessage() : SampleMessage(nullptr) {}
+  virtual ~SampleMessage();
+  explicit constexpr SampleMessage(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  SampleMessage(const SampleMessage& from);
+  SampleMessage(SampleMessage&& from) noexcept
+    : SampleMessage() {
+    *this = ::std::move(from);
+  }
+
+  inline SampleMessage& operator=(const SampleMessage& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SampleMessage& operator=(SampleMessage&& from) noexcept {
+    if (GetArena() == from.GetArena()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const SampleMessage& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SampleMessage* internal_default_instance() {
+    return reinterpret_cast<const SampleMessage*>(
+               &_SampleMessage_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  friend void swap(SampleMessage& a, SampleMessage& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SampleMessage* other) {
+    if (other == this) return;
+    if (GetArena() == other->GetArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SampleMessage* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline SampleMessage* New() const final {
+    return CreateMaybeMessage<SampleMessage>(nullptr);
+  }
+
+  SampleMessage* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<SampleMessage>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const SampleMessage& from);
+  void MergeFrom(const SampleMessage& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SampleMessage* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "rpc.SampleMessage";
+  }
+  protected:
+  explicit SampleMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    return ::descriptor_table_rpc_2eproto_metadata_getter(kIndexInFileMessages);
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kStringValueFieldNumber = 1,
+    kBooleanValueFieldNumber = 3,
+    kIntegerValueFieldNumber = 2,
+  };
+  // optional string string_value = 1 [default = "string_value", json_name = "stringValue"];
+  bool has_string_value() const;
+  private:
+  bool _internal_has_string_value() const;
+  public:
+  void clear_string_value();
+  const std::string& string_value() const;
+  void set_string_value(const std::string& value);
+  void set_string_value(std::string&& value);
+  void set_string_value(const char* value);
+  void set_string_value(const char* value, size_t size);
+  std::string* mutable_string_value();
+  std::string* release_string_value();
+  void set_allocated_string_value(std::string* string_value);
+  private:
+  const std::string& _internal_string_value() const;
+  void _internal_set_string_value(const std::string& value);
+  std::string* _internal_mutable_string_value();
+  public:
+
+  // optional bool boolean_value = 3 [default = true, json_name = "booleanValue"];
+  bool has_boolean_value() const;
+  private:
+  bool _internal_has_boolean_value() const;
+  public:
+  void clear_boolean_value();
+  bool boolean_value() const;
+  void set_boolean_value(bool value);
+  private:
+  bool _internal_boolean_value() const;
+  void _internal_set_boolean_value(bool value);
+  public:
+
+  // optional int64 integer_value = 2 [default = 12345, json_name = "integerValue"];
+  bool has_integer_value() const;
+  private:
+  bool _internal_has_integer_value() const;
+  public:
+  void clear_integer_value();
+  ::PROTOBUF_NAMESPACE_ID::int64 integer_value() const;
+  void set_integer_value(::PROTOBUF_NAMESPACE_ID::int64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_integer_value() const;
+  void _internal_set_integer_value(::PROTOBUF_NAMESPACE_ID::int64 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:rpc.SampleMessage)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  static const ::PROTOBUF_NAMESPACE_ID::internal::LazyString _i_give_permission_to_break_this_code_default_string_value_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr string_value_;
+  bool boolean_value_;
+  ::PROTOBUF_NAMESPACE_ID::int64 integer_value_;
+  friend struct ::TableStruct_rpc_2eproto;
+};
 // ===================================================================
 
 
@@ -1015,9 +1206,145 @@ inline void RPC2Response::set_allocated_message(std::string* message) {
   // @@protoc_insertion_point(field_set_allocated:rpc.RPC2Response.message)
 }
 
+// -------------------------------------------------------------------
+
+// SampleMessage
+
+// optional string string_value = 1 [default = "string_value", json_name = "stringValue"];
+inline bool SampleMessage::_internal_has_string_value() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool SampleMessage::has_string_value() const {
+  return _internal_has_string_value();
+}
+inline void SampleMessage::clear_string_value() {
+  string_value_.ClearToDefault(::rpc::SampleMessage::_i_give_permission_to_break_this_code_default_string_value_, GetArena());
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& SampleMessage::string_value() const {
+  // @@protoc_insertion_point(field_get:rpc.SampleMessage.string_value)
+  if (string_value_.IsDefault(nullptr)) return _i_give_permission_to_break_this_code_default_string_value_.get();
+  return _internal_string_value();
+}
+inline void SampleMessage::set_string_value(const std::string& value) {
+  _internal_set_string_value(value);
+  // @@protoc_insertion_point(field_set:rpc.SampleMessage.string_value)
+}
+inline std::string* SampleMessage::mutable_string_value() {
+  // @@protoc_insertion_point(field_mutable:rpc.SampleMessage.string_value)
+  return _internal_mutable_string_value();
+}
+inline const std::string& SampleMessage::_internal_string_value() const {
+  return string_value_.Get();
+}
+inline void SampleMessage::_internal_set_string_value(const std::string& value) {
+  _has_bits_[0] |= 0x00000001u;
+  string_value_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, value, GetArena());
+}
+inline void SampleMessage::set_string_value(std::string&& value) {
+  _has_bits_[0] |= 0x00000001u;
+  string_value_.Set(
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:rpc.SampleMessage.string_value)
+}
+inline void SampleMessage::set_string_value(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _has_bits_[0] |= 0x00000001u;
+  string_value_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(value), GetArena());
+  // @@protoc_insertion_point(field_set_char:rpc.SampleMessage.string_value)
+}
+inline void SampleMessage::set_string_value(const char* value,
+    size_t size) {
+  _has_bits_[0] |= 0x00000001u;
+  string_value_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::NonEmptyDefault{}, ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:rpc.SampleMessage.string_value)
+}
+inline std::string* SampleMessage::_internal_mutable_string_value() {
+  _has_bits_[0] |= 0x00000001u;
+  return string_value_.Mutable(::rpc::SampleMessage::_i_give_permission_to_break_this_code_default_string_value_, GetArena());
+}
+inline std::string* SampleMessage::release_string_value() {
+  // @@protoc_insertion_point(field_release:rpc.SampleMessage.string_value)
+  if (!_internal_has_string_value()) {
+    return nullptr;
+  }
+  _has_bits_[0] &= ~0x00000001u;
+  return string_value_.ReleaseNonDefault(nullptr, GetArena());
+}
+inline void SampleMessage::set_allocated_string_value(std::string* string_value) {
+  if (string_value != nullptr) {
+    _has_bits_[0] |= 0x00000001u;
+  } else {
+    _has_bits_[0] &= ~0x00000001u;
+  }
+  string_value_.SetAllocated(nullptr, string_value,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:rpc.SampleMessage.string_value)
+}
+
+// optional int64 integer_value = 2 [default = 12345, json_name = "integerValue"];
+inline bool SampleMessage::_internal_has_integer_value() const {
+  bool value = (_has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool SampleMessage::has_integer_value() const {
+  return _internal_has_integer_value();
+}
+inline void SampleMessage::clear_integer_value() {
+  integer_value_ = PROTOBUF_LONGLONG(12345);
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 SampleMessage::_internal_integer_value() const {
+  return integer_value_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 SampleMessage::integer_value() const {
+  // @@protoc_insertion_point(field_get:rpc.SampleMessage.integer_value)
+  return _internal_integer_value();
+}
+inline void SampleMessage::_internal_set_integer_value(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _has_bits_[0] |= 0x00000004u;
+  integer_value_ = value;
+}
+inline void SampleMessage::set_integer_value(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_integer_value(value);
+  // @@protoc_insertion_point(field_set:rpc.SampleMessage.integer_value)
+}
+
+// optional bool boolean_value = 3 [default = true, json_name = "booleanValue"];
+inline bool SampleMessage::_internal_has_boolean_value() const {
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool SampleMessage::has_boolean_value() const {
+  return _internal_has_boolean_value();
+}
+inline void SampleMessage::clear_boolean_value() {
+  boolean_value_ = true;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline bool SampleMessage::_internal_boolean_value() const {
+  return boolean_value_;
+}
+inline bool SampleMessage::boolean_value() const {
+  // @@protoc_insertion_point(field_get:rpc.SampleMessage.boolean_value)
+  return _internal_boolean_value();
+}
+inline void SampleMessage::_internal_set_boolean_value(bool value) {
+  _has_bits_[0] |= 0x00000002u;
+  boolean_value_ = value;
+}
+inline void SampleMessage::set_boolean_value(bool value) {
+  _internal_set_boolean_value(value);
+  // @@protoc_insertion_point(field_set:rpc.SampleMessage.boolean_value)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
