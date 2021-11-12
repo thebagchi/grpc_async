@@ -1,0 +1,43 @@
+syntax = "proto2";
+
+package sim_rpc;
+
+service SampleSvc {
+  rpc RPC_1 (RPC1Request) returns (RPC1Response) {
+
+  }
+  rpc RPC_2 (RPC2Request) returns (RPC2Response) {
+
+  }
+}
+
+service AnotherSampleSvc {
+  rpc RPC_1 (RPC1Request) returns (RPC1Response) {
+
+  }
+  rpc RPC_2 (RPC2Request) returns (RPC2Response) {
+
+  }
+}
+
+message RPC1Request {
+  optional string name                 = 1;
+}
+
+message RPC1Response {
+  optional string message              = 1;
+}
+
+message RPC2Request {
+  optional string name                 = 1;
+}
+
+message RPC2Response {
+  optional string message              = 1;
+}
+
+message SampleMessage {
+  optional string string_value         = 1 [default = "string_value", json_name = "stringValue"];
+  optional int64 integer_value         = 2 [default = 12345, json_name = "integerValue"];
+  optional bool boolean_value          = 3 [default = true, json_name = "booleanValue"];
+}

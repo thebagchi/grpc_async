@@ -1,6 +1,7 @@
 #include "Server.hh"
 #include "Framework/RPCHandler.hh"
 #include "Framework/Handler.hh"
+#include <grpcpp/ext/proto_server_reflection_plugin.h>
 
 Server::~Server() {
   server_->Shutdown();
@@ -33,12 +34,13 @@ void Server::Loop() {
 }
 
 void Server::Start() {
+  grpc::reflection::InitProtoReflectionServerBuilderPlugin();
   grpc::ServerBuilder builder;
   builder.AddListeningPort(addr_, grpc::InsecureServerCredentials());
   for (const auto &item : handlers_) {
     builder.RegisterService(item->Service());
   }
-  builder.SetResourceQuota(grpc::ResourceQuota().SetMaxThreads(1));
+  builder.SetResourceQuota(grpc::ResourceQuota().SetMaxThreads(2));
   cq_ = builder.AddCompletionQueue();
   server_ = builder.BuildAndStart();
   if (nullptr == server_) {

@@ -31,6 +31,11 @@ foreach(PROTO_FILE ${PROTO_FILES})
 
     message("Processing ${__FILE__} ...")
 
+    string(FIND ${__FILE_NAME__} "sim_" __FOUND__)
+    if (${__FOUND__} STREQUAL "0")
+        message("Processing ${__FILE_NAME__}")
+    endif()
+
     string(REPLACE ".proto" ".pb.cc" PROTO_SRC ${__FILE_NAME__})
     string(REPLACE ".proto" ".pb.h" PROTO_HDR ${__FILE_NAME__})
     string(REPLACE ".proto" ".grpc.pb.cc" GRPC_SRC ${__FILE_NAME__})
@@ -40,11 +45,11 @@ foreach(PROTO_FILE ${PROTO_FILES})
             OUTPUT "${GENERATED_DIR}/${PROTO_SRC}" "${GENERATED_DIR}/${PROTO_HDR}" "${GENERATED_DIR}/${GRPC_SRC}" "${GENERATED_DIR}/${GRPC_HDR}"
             COMMAND ${_PROTOBUF_PROTOC}
             ARGS --grpc_out "${GENERATED_DIR}"
-            --proto_path="${__FILE_PATH__}"
-            --cpp_out "${GENERATED_DIR}"
-            -I "${PROTOC_INCLUDE_DIR}"
-            --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
-            "${__FILE__}"
+                 --proto_path="${__FILE_PATH__}"
+                 --cpp_out "${GENERATED_DIR}"
+                 -I "${PROTOC_INCLUDE_DIR}"
+                 --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
+                 "${__FILE__}"
             DEPENDS "${__FILE__}"
     )
 
