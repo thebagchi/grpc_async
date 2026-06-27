@@ -1,11 +1,15 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 project(grpc_async)
 
 add_compile_definitions(USING_TEMPLATE)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/protobuf/grpc)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-g")
+
+include(${CMAKE_SOURCE_DIR}/cmake/install_grpc.cmake)
+install_grpc()
+
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/third_party/bin)
 
 add_subdirectory(proto)
 

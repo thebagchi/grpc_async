@@ -1,5 +1,7 @@
 # Project exclude paths
 /protobuf
+/third_party
 /build
+/_build
 /.idea/
 token
