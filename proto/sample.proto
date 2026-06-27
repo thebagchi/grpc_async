@@ -1,28 +1,33 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package sample;
 
-service ExampleSvc {
-  rpc RPC_1 (GRPC1Request) returns (GRPC1Response) {
+option go_package = "github.com/thebagchi/grpc_async/gen/sample";
 
+message Chunk {
+  string payload = 1;
+  uint64 seq     = 2;
+}
+
+message Summary {
+  uint64 count = 1;
+  string note  = 2;
+}
+
+service SampleService {
+  rpc Unary (Chunk) returns (Summary) {
+    // Unary: one request, one response.
   }
-  rpc RPC_2 (GRPC2Request) returns (GRPC2Response) {
 
+  rpc ServerStream (Chunk) returns (stream Chunk) {
+    // Server-streaming: one request, a stream of responses.
   }
-}
 
-message GRPC1Request {
-  optional string name                 = 1;
-}
+  rpc ClientStream (stream Chunk) returns (Summary) {
+    // Client-streaming: a stream of requests, one response.
+  }
 
-message GRPC1Response {
-  optional string message              = 1;
-}
-
-message GRPC2Request {
-  optional string name                 = 1;
-}
-
-message GRPC2Response {
-  optional string message              = 1;
+  rpc BidiStream (stream Chunk) returns (stream Chunk) {
+    // Bidirectional streaming: a stream of requests and a stream of responses.
+  }
 }

@@ -1,0 +1,168 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+# ============================================================================
+# INDENTATION & SPACING
+# ============================================================================
+
+IndentWidth: 2
+TabWidth: 8
+UseTab: Never
+AccessModifierOffset: -2
+IndentWrappedFunctionNames: false
+IndentCaseLabels: false
+IndentCaseBlocks: true
+NamespaceIndentation: All
+
+# ============================================================================
+# LINE BREAKING & COLUMN LIMITS
+# ============================================================================
+
+ColumnLimit: 100
+ContinuationIndentWidth: 1
+BreakStringLiterals: true
+MaxEmptyLinesToKeep: 1
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 60
+
+# ============================================================================
+# BRACE PLACEMENT & STYLE
+# ============================================================================
+
+BreakBeforeBraces: Attach
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+RemoveBracesLLVM: false
+
+# ============================================================================
+# PARAMETER & ARGUMENT PACKING
+# ============================================================================
+
+BinPackArguments: false
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# ============================================================================
+# FUNCTION & METHOD FORMATTING
+# ============================================================================
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializersBeforeComma: false
+
+# ============================================================================
+# POINTER & ALIGNMENT
+# ============================================================================
+
+PointerAlignment: Left
+DerivePointerAlignment: false
+AlignAfterOpenBracket: DontAlign
+AlignOperands: true
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+
+# ============================================================================
+# COMMENTS & SPECIAL OPTIONS
+# ============================================================================
+
+CommentPragmas: "^ IWYU pragma:"
+ReflowComments: false
+SpacesBeforeTrailingComments: 1
+
+# ============================================================================
+# LANGUAGE-SPECIFIC OPTIONS
+# ============================================================================
+
+AllowShortLambdasOnASingleLine: None
+AllowShortEnumsOnASingleLine: false
+Standard: Auto
+Cpp11BracedListStyle: false
+
+# ============================================================================
+# SPACING OPTIONS
+# ============================================================================
+
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# ============================================================================
+# INCLUDE & MACRO OPTIONS
+# ============================================================================
+
+SortIncludes: false
+IncludeIsMainRegex: "([-_](test|unittest))?$"
+ForEachMacros: [foreach, Q_FOREACH, BOOST_FOREACH]
+MacroBlockBegin: ""
+MacroBlockEnd: ""
+
+# ============================================================================
+# OBJECTIVE-C OPTIONS
+# ============================================================================
+
+ObjCBlockIndentWidth: 2
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: false
+
+# ============================================================================
+# JAVASCRIPT OPTIONS
+# ============================================================================
+
+JavaScriptQuotes: Leave
+JavaScriptWrapImports: true
+
+# ============================================================================
+# JAVA OPTIONS
+# ============================================================================
+
+BreakAfterJavaFieldAnnotations: false
+
+# ============================================================================
+# RETURN TYPE FORMATTING
+# ============================================================================
+
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: false
+
+# ============================================================================
+# OTHER OPTIONS
+# ============================================================================
+
+DisableFormat: false
+ExperimentalAutoDetectBinPacking: false
+CompactNamespaces: false
+EmptyLineBeforeAccessModifier: Never
+LambdaBodyIndentation: OuterScope
