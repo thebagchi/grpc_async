@@ -2,7 +2,6 @@
 #define FRAMEWORK_SERVER_HPP_INCLUDED
 
 #include <deque>
-#include <iostream>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -307,7 +306,7 @@ namespace framework {
       // message is present; OUT_OF_RANGE signals a clean half-close (EOF).
       // Arms the next gRPC read for any non-EOF invocation.
       auto msg = std::move(pending_);
-      auto status = read_status_;
+      auto status = status_;
       if (!done_) {
         _BeginRead();
       }
@@ -324,7 +323,7 @@ namespace framework {
 
     grpc::Status Status() const {
       // Returns the current read status: OK while data flows, OUT_OF_RANGE at half-close.
-      return read_status_;
+      return status_;
     }
 
     grpc::ServerContext* Context() {
@@ -339,10 +338,10 @@ namespace framework {
       reader_->Read(message.get(), CallbackTag::New([self, message](bool ok) {
         if (ok) {
           self->pending_ = message;
-          self->read_status_ = grpc::Status::OK;
+          self->status_ = grpc::Status::OK;
         } else {
           self->done_ = true;
-          self->read_status_ = grpc::Status(grpc::StatusCode::OUT_OF_RANGE, "end of stream");
+          self->status_ = grpc::Status(grpc::StatusCode::OUT_OF_RANGE, "end of stream");
         }
         self->callback_(self);
       }));
@@ -355,7 +354,7 @@ namespace framework {
     grpc::ServerContext context_;
     std::unique_ptr<Reader> reader_;
     Ptr<Request> pending_;
-    grpc::Status read_status_;
+    grpc::Status status_;
     bool done_ = false;
     Ptr<Self> self_;
   };
@@ -416,7 +415,7 @@ namespace framework {
       // message is present; OUT_OF_RANGE signals a clean half-close (EOF).
       // Arms the next gRPC read for any non-EOF invocation.
       auto msg = std::move(pending_);
-      auto status = read_status_;
+      auto status = status_;
       if (!done_) {
         _BeginRead();
       }
@@ -432,13 +431,13 @@ namespace framework {
     void Finish(const grpc::Status& status = grpc::Status::OK) {
       // Requests stream closure once all queued writes have been flushed.
       finishing_ = true;
-      status_ = status;
+      finish_status_ = status;
       _Pump();
     }
 
     grpc::Status Status() const {
       // Returns the current read status: OK while data flows, OUT_OF_RANGE at half-close.
-      return read_status_;
+      return status_;
     }
 
     grpc::ServerContext* Context() {
@@ -453,10 +452,10 @@ namespace framework {
       stream_->Read(message.get(), CallbackTag::New([self, message](bool ok) {
         if (ok) {
           self->pending_ = message;
-          self->read_status_ = grpc::Status::OK;
+          self->status_ = grpc::Status::OK;
         } else {
           self->done_ = true;
-          self->read_status_ = grpc::Status(grpc::StatusCode::OUT_OF_RANGE, "end of stream");
+          self->status_ = grpc::Status(grpc::StatusCode::OUT_OF_RANGE, "end of stream");
         }
         self->callback_(self);
       }));
@@ -469,10 +468,10 @@ namespace framework {
       }
       if (!queue_.empty()) {
         writing_ = true;
-        pending_write_ = queue_.front();
+        buffered_ = queue_.front();
         queue_.pop_front();
         auto self = this->shared_from_this();
-        stream_->Write(pending_write_, CallbackTag::New([self](bool ok) {
+        stream_->Write(buffered_, CallbackTag::New([self](bool ok) {
           self->writing_ = false;
           if (ok) {
             self->_Pump();
@@ -481,17 +480,17 @@ namespace framework {
           }
         }));
       } else if (finishing_) {
-        _Finish(status_);
+        _Finish(finish_status_);
       }
     }
 
     void _Finish(const grpc::Status& status) {
-      // Issues the terminal Finish exactly once. Updates read_status_ so Status().ok() == active.
+      // Issues the terminal Finish exactly once. Updates status_ so Status().ok() == active.
       if (finished_) {
         return;
       }
       finished_ = true;
-      read_status_ =
+      status_ =
        status.ok() ? grpc::Status(grpc::StatusCode::OUT_OF_RANGE, "stream finished") : status;
       auto self = this->shared_from_this();
       stream_->Finish(status, CallbackTag::New([self](bool) {
@@ -506,11 +505,11 @@ namespace framework {
     grpc::ServerContext context_;
     std::unique_ptr<Stream> stream_;
     Ptr<Request> pending_;
-    grpc::Status read_status_;
+    grpc::Status status_;
     bool done_ = false;
     std::deque<Response> queue_;
-    Response pending_write_;
-    grpc::Status status_;
+    Response buffered_;
+    grpc::Status finish_status_;
     bool writing_ = false;
     bool finishing_ = false;
     bool finished_ = false;
@@ -519,19 +518,13 @@ namespace framework {
 
   // ── Server ───────────────────────────────────────────────────────────────────
   //
-  // Owns the gRPC server, the completion queue, and the registered services.
-  // Start builds and arms the server without blocking; Wait runs the polling
-  // loop. A process hosting both a Server and a Client can share this Server's
-  // reactor (see GetReactor) so a single thread drains both queues.
+  // Lightweight configuration holder: stores an address and the services to
+  // host on it.  Builder::Start() collects all registered Server objects,
+  // builds a single gRPC server with one shared completion queue, and calls
+  // Register then Install on each one.
   class Server {
   public:
     explicit Server(std::string address) : address_(std::move(address)) {
-      // Do Nothing
-    }
-
-    ~Server() {
-      // Stops the server as a safety net.
-      Stop();
     }
 
     Server(const Server&) = delete;
@@ -542,66 +535,25 @@ namespace framework {
       services_.push_back(std::move(service));
     }
 
-    void Start(Ptr<grpc::ServerCredentials> credentials = grpc::InsecureServerCredentials()) {
-      // Builds the server and arms every receiver, then returns without blocking.
-      grpc::ServerBuilder builder;
-      builder.AddListeningPort(address_, credentials);
+    // Adds the listening port and registers all services with the builder.
+    // Called once by Builder::Start() before BuildAndStart.
+    void Register(grpc::ServerBuilder& builder) {
+      builder.AddListeningPort(address_, grpc::InsecureServerCredentials());
       for (auto& service : services_) {
         builder.RegisterService(service->Svc());
       }
-      cq_ = builder.AddCompletionQueue();
-      server_ = builder.BuildAndStart();
-      if (!server_) {
-        std::cerr << "Failed to start server on " << address_ << std::endl;
-        return;
-      }
+    }
+
+    // Arms the first receiver for every RPC on the shared completion queue.
+    // Called once by Builder::Start() after BuildAndStart.
+    void Install(grpc::ServerCompletionQueue* cq) {
       for (auto& service : services_) {
-        service->Install(cq_.get());
-      }
-      reactor_ = std::make_shared<Reactor>(cq_.get());
-    }
-
-    void Wait() {
-      // Blocks polling the completion queue until Stop, unless another caller is
-      // already draining the shared reactor.
-      if (reactor_) {
-        reactor_->Run();
-      }
-    }
-
-    grpc::CompletionQueue* Queue() const {
-      // Returns the server completion queue for sharing with a Client.
-      return cq_.get();
-    }
-
-    Ptr<Reactor> GetReactor() const {
-      // Returns the reactor so a Client can share this single polling loop.
-      return reactor_;
-    }
-
-    void Stop() {
-      // Shuts down the server and drains the completion queue. Safe to call
-      // repeatedly or before Start. If Wait() is running on another thread the
-      // reactor's atomic guard prevents a double-drain; that thread's Next loop
-      // exits naturally once the queue empties after Shutdown.
-      if (server_) {
-        server_->Shutdown();
-      }
-      if (cq_) {
-        cq_->Shutdown();
-        if (reactor_) {
-          reactor_->Run();
-        } else {
-          Drain(cq_.get());
-        }
+        service->Install(cq);
       }
     }
   private:
     std::string address_;
     std::vector<Ptr<Service>> services_;
-    std::unique_ptr<grpc::Server> server_;
-    std::unique_ptr<grpc::ServerCompletionQueue> cq_;
-    Ptr<Reactor> reactor_;
   };
 
 } // namespace framework

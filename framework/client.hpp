@@ -474,6 +474,18 @@ namespace framework {
       return reactor_;
     }
 
+    // Binds this client to an existing reactor (e.g. a server's reactor).
+    // Safe to call only before any streams are created; the previously owned
+    // CompletionQueue is shut down and drained before the swap.
+    void SetReactor(Ptr<Reactor> reactor) {
+      if (cq_) {
+        cq_->Shutdown();
+        Drain(cq_.get());
+        cq_.reset();
+      }
+      reactor_ = std::move(reactor);
+    }
+
     void Run() {
       // Drains the queue until Shutdown, unless another caller is already draining
       // the shared reactor, in which case it returns immediately.

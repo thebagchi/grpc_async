@@ -97,9 +97,11 @@ namespace sample {
     using ClientStreamCaller = framework::OutboundStream<Stub, ::sample::Chunk, ::sample::Summary>;
     using BidiStreamCaller = framework::DuplexStream<Stub, ::sample::Chunk, ::sample::Chunk>;
 
-    SampleServiceClient(const std::shared_ptr<grpc::Channel>& channel, grpc::CompletionQueue* cq)
-        : stub_(SampleService::NewStub(channel)), cq_(cq) {
-      // Initialises stub and stores the completion queue pointer.
+    SampleServiceClient(const std::string& address,
+     framework::Ptr<framework::Client> client,
+     std::shared_ptr<grpc::ChannelCredentials> creds = grpc::InsecureChannelCredentials())
+        : stub_(SampleService::NewStub(grpc::CreateChannel(address, std::move(creds)))),
+          cq_(client->CQ()), client_(std::move(client)) {
     }
 
     // ── Per-RPC methods ───────────────────────────────────────────────────────
@@ -140,6 +142,7 @@ namespace sample {
   private:
     std::unique_ptr<Stub> stub_;
     grpc::CompletionQueue* cq_;
+    framework::Ptr<framework::Client> client_;
   };
 
 } // namespace sample

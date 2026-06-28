@@ -67,10 +67,13 @@ class {{.Name}}Client {
 {{range .Methods -}}
   using {{.Name}}Caller = {{clientStream .}}<Stub, {{.Input}}, {{.Output}}>;
 {{end}}
-  {{.Name}}Client(const std::shared_ptr<grpc::Channel>& channel, grpc::CompletionQueue* cq)
-      : stub_({{.Name}}::NewStub(channel)), cq_(cq) {
-    // Initialises stub and stores the completion queue pointer.
-  }
+  {{.Name}}Client(const std::string& address,
+                  framework::Ptr<framework::Client> client,
+                  std::shared_ptr<grpc::ChannelCredentials> creds =
+                      grpc::InsecureChannelCredentials())
+      : stub_({{.Name}}::NewStub(grpc::CreateChannel(address, std::move(creds)))),
+        cq_(client->CQ()),
+        client_(std::move(client)) {}
 
   // ── Per-RPC methods ───────────────────────────────────────────────────────
 {{range .Methods -}}
@@ -85,6 +88,7 @@ class {{.Name}}Client {
  private:
   std::unique_ptr<Stub> stub_;
   grpc::CompletionQueue* cq_;
+  framework::Ptr<framework::Client> client_;
 };
 {{end}}
 }  // namespace {{.Namespace}}

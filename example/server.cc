@@ -1,85 +1,129 @@
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 
+#include "framework/builder.hpp"
 #include "sample.framework.pb.h"
 
 using sample::Chunk;
 using sample::Summary;
+using namespace std::chrono_literals;
 
-// Concrete service implementation.  The generated SampleServiceBase provides
-// Install(), Svc(), and the four pure-virtual handlers below; no framework
-// template plumbing is needed here.
 class SampleServiceImpl final : public sample::SampleServiceBase {
 public:
-  // Unary: echo the payload back inside a Summary.
+  // Unary: respond 100 ms after the request arrives.
   void OnUnary(grpc::ServerContext* context,
    const Chunk& request,
    const framework::Ptr<UnaryCall>& call) override {
-    Summary summary;
-    summary.set_count(1);
-    summary.set_note("unary: " + request.payload());
-    call->Finish(summary);
+    framework::Builder::Instance().DoAfter(100ms, [call, payload = request.payload()](bool ok) {
+      Summary summary;
+      summary.set_count(1);
+      summary.set_note((ok ? "delayed: " : "cancelled: ") + payload);
+      call->Finish(summary);
+    });
   }
 
-  // Server-streaming: emit three derived chunks then close.
+  // Server-streaming: emit one chunk per second for 1 minute then close.
   void OnServerStream(grpc::ServerContext* context,
    const Chunk& request,
    const framework::Ptr<ServerStreamCall>& call) override {
-    for (std::uint64_t i = 0; i < 3; ++i) {
+    struct State {
+      std::uint64_t seq = 0;
+      std::string payload;
+      framework::Ptr<ServerStreamCall> call;
+      bool closed = false;
+      std::function<void(bool)> tick;
+    };
+
+    auto s = std::make_shared<State>();
+    s->payload = request.payload();
+    s->call = call;
+
+    // Tick every second; stop once closed flag is set.
+    s->tick = [s](bool ok) {
+      if (!ok || s->closed)
+        return;
       Chunk chunk;
-      chunk.set_payload(request.payload() + "-" + std::to_string(i));
-      chunk.set_seq(i);
-      call->Write(chunk);
-    }
-    call->Finish(grpc::Status::OK);
+      chunk.set_payload(s->payload + "-" + std::to_string(s->seq));
+      chunk.set_seq(s->seq++);
+      s->call->Write(chunk);
+      framework::Builder::Instance().DoAfter(1s, s->tick);
+    };
+
+    framework::Builder::Instance().DoAfter(1s, s->tick);
+
+    // After 1 minute, stop ticking and close the stream.
+    framework::Builder::Instance().DoAfter(1min, [s](bool ok) {
+      s->closed = true;
+      s->call->Finish(grpc::Status::OK);
+      s->tick = nullptr; // break the s→tick→s reference cycle
+    });
   }
 
-  // Client-streaming: count incoming chunks and reply once with a Summary.
-  // Called per message; Read() returns (message, Status::OK) while data flows
-  // and (nullptr, OUT_OF_RANGE) at half-close.
+  // Client-streaming: count incoming chunks; finish after 10 or at half-close.
   void OnClientStream(
    grpc::ServerContext* context, const framework::Ptr<ClientStreamCall>& call) override {
     auto [msg, status] = call->Read();
-    if (!status.ok()) {
+
+    // Guard against the stale callback that arrives after we already finished.
+    if (counts_.find(call.get()) == counts_.end() && !status.ok())
+      return;
+
+    auto& count = counts_[call.get()];
+
+    if (!status.ok() || count >= 10) {
       Summary summary;
-      summary.set_count(counts_[call.get()]);
-      summary.set_note("received");
+      summary.set_count(count);
+      summary.set_note(count >= 10 ? "limit reached" : "received");
       counts_.erase(call.get());
       call->Finish(summary);
       return;
     }
-    counts_[call.get()]++;
+    count++;
   }
 
-  // Bidi: echo every incoming chunk, close when the client half-closes.
-  // Called per message; Read() returns (message, Status::OK) while data flows
-  // and (nullptr, OUT_OF_RANGE) at half-close.
+  // Bidi: echo every message; idle watchdog of 1 minute.
   void OnBidiStream(
    grpc::ServerContext* context, const framework::Ptr<BidiStreamCall>& call) override {
     auto [msg, status] = call->Read();
+
     if (!status.ok()) {
+      if (auto it = watchdogs_.find(call.get()); it != watchdogs_.end()) {
+        it->second->Cancel();
+        watchdogs_.erase(it);
+      }
       call->Finish(grpc::Status::OK);
       return;
     }
+
+    if (watchdogs_.find(call.get()) == watchdogs_.end()) {
+      watchdogs_[call.get()] = framework::Builder::Instance().DoAfter(1min, [this, call](bool ok) {
+        if (ok) {
+          std::cout << "bidi stream timed out — closing\n";
+          call->Finish(grpc::Status(grpc::StatusCode::DEADLINE_EXCEEDED, "stream idle timeout"));
+        }
+        watchdogs_.erase(call.get());
+      });
+    }
+
     Chunk reply;
     reply.set_payload("echo: " + msg->payload());
     reply.set_seq(msg->seq());
     call->Write(reply);
   }
 private:
-  // Per-call message counter for client-streaming RPCs, keyed by call pointer.
   std::unordered_map<void*, std::uint64_t> counts_;
+  std::unordered_map<void*, framework::Ptr<framework::Alarm>> watchdogs_;
 };
 
-// Builds the server, registers the demo service, and blocks serving.
 int main() {
   const std::string address = "0.0.0.0:50051";
-  framework::Server server(address);
-  server.AddHandler(std::make_shared<SampleServiceImpl>());
+  auto& builder = framework::Builder::Instance();
+  auto server = builder.AddServer(address);
+  server->AddHandler(std::make_shared<SampleServiceImpl>());
   std::cout << "Server listening on " << address << std::endl;
-  server.Start();
-  server.Wait();
+  builder.Start();
   return 0;
 }

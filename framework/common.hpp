@@ -1,6 +1,7 @@
 #ifndef FRAMEWORK_COMMON_HPP_INCLUDED
 #define FRAMEWORK_COMMON_HPP_INCLUDED
 
+#include <grpcpp/alarm.h>
 #include <grpcpp/grpcpp.h>
 
 #include <atomic>
@@ -134,6 +135,36 @@ namespace framework {
   private:
     grpc::CompletionQueue* cq_;
     std::atomic_bool running_{ false };
+  };
+
+  // Schedules a lambda to fire via the completion queue at a given deadline.
+  // The callback receives true when the alarm expires, false when cancelled.
+  // Self-ownership keeps the Alarm alive until the callback fires, so the
+  // caller may discard the returned Ptr if cancellation is not needed.
+  //
+  // Usage:
+  //   auto a = framework::Alarm::New(cq, Now() + 500ms, [](bool ok) { ... });
+  //   a->Cancel();   // optional; fires callback with ok=false
+  class Alarm {
+  public:
+    template <typename Deadline>
+    static Ptr<Alarm> New(
+     grpc::CompletionQueue* cq, const Deadline& deadline, std::function<void(bool)> callback) {
+      auto a = std::make_shared<Alarm>();
+      a->self_ = a;
+      a->alarm_.Set(cq, deadline, CallbackTag::New([a, cb = std::move(callback)](bool ok) mutable {
+        a->self_.reset();
+        cb(ok);
+      }));
+      return a;
+    }
+
+    void Cancel() {
+      alarm_.Cancel();
+    }
+  private:
+    grpc::Alarm alarm_;
+    Ptr<Alarm> self_;
   };
 
 } // namespace framework

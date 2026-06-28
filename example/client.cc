@@ -1,11 +1,10 @@
-#include <grpcpp/grpcpp.h>
-
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 
+#include "framework/builder.hpp"
 #include "sample.framework.pb.h"
 
 using framework::StreamEvent;
@@ -15,18 +14,16 @@ using sample::Summary;
 
 // Exercises all four call shapes against the demo server using one polling loop.
 int main() {
-  auto channel = grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials());
+  auto& builder = framework::Builder::Instance();
+  auto client = builder.AddClient();
 
-  framework::Client client;
-  auto* cq = client.CQ();
-
-  SampleServiceClient svc(channel, cq);
+  SampleServiceClient svc("localhost:50051", client);
 
   // Shuts the client down once all four logical calls have finished.
   auto remaining = std::make_shared<int>(4);
-  std::function<void()> done_one = [&client, remaining]() {
+  std::function<void()> done_one = [remaining]() {
     if (--(*remaining) == 0) {
-      client.Shutdown();
+      framework::Builder::Instance().Stop();
     }
   };
 
@@ -103,6 +100,6 @@ int main() {
     });
   }
 
-  client.Run();
+  builder.Start();
   return 0;
 }
